@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
-import { createChart, ColorType, AreaSeries } from 'lightweight-charts';
-import type { IChartApi, ISeriesApi } from 'lightweight-charts';
+import { createChart, ColorType, CandlestickSeries } from 'lightweight-charts';
+import type { IChartApi, ISeriesApi, CandlestickData } from 'lightweight-charts';
 
 interface PriceChartProps {
   isActive: boolean;
@@ -9,8 +9,8 @@ interface PriceChartProps {
 export const PriceChart: React.FC<PriceChartProps> = ({ isActive }) => {
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
-  const seriesRef = useRef<ISeriesApi<"Area"> | null>(null);
-  const lastPriceRef = useRef<number>(100);
+  const seriesRef = useRef<ISeriesApi<"Candlestick"> | null>(null);
+  const lastPriceRef = useRef<number>(40000);
 
   useEffect(() => {
     if (!chartContainerRef.current) return;
@@ -36,27 +36,37 @@ export const PriceChart: React.FC<PriceChartProps> = ({ isActive }) => {
       handleScale: false,
     });
 
-    // Use addSeries with AreaSeries for v5+
-    const series = chart.addSeries(AreaSeries, {
-      lineColor: '#3b82f6',
-      topColor: 'rgba(59, 130, 246, 0.4)',
-      bottomColor: 'rgba(59, 130, 246, 0.0)',
-      lineWidth: 2,
+    const series = chart.addSeries(CandlestickSeries, {
+      upColor: '#10b981', // profit color
+      downColor: '#ef4444', // loss color
+      borderVisible: false,
+      wickUpColor: '#10b981',
+      wickDownColor: '#ef4444',
     });
 
-    // Initial data
-    const initialData = [];
+    // Initial OHLC data
+    const initialData: CandlestickData[] = [];
     const now = Math.floor(Date.now() / 1000);
-    let lastPrice = 100;
+    let lastClose = 40000;
+    
     for (let i = 100; i >= 0; i--) {
-      lastPrice = lastPrice + (Math.random() - 0.5) * 2;
+      const open = lastClose + (Math.random() - 0.5) * 50;
+      const close = open + (Math.random() - 0.5) * 100;
+      const high = Math.max(open, close) + Math.random() * 50;
+      const low = Math.min(open, close) - Math.random() * 50;
+      
       initialData.push({
-        time: (now - i) as any,
-        value: lastPrice,
+        time: (now - i * 60) as any,
+        open,
+        high,
+        low,
+        close,
       });
+      lastClose = close;
     }
+    
     series.setData(initialData);
-    lastPriceRef.current = lastPrice;
+    lastPriceRef.current = lastClose;
 
     chartRef.current = chart;
     seriesRef.current = series;
@@ -79,11 +89,21 @@ export const PriceChart: React.FC<PriceChartProps> = ({ isActive }) => {
   useEffect(() => {
     let interval: number;
     if (isActive && seriesRef.current) {
-      interval = setInterval(() => {
-        lastPriceRef.current += (Math.random() - 0.48) * 2;
+      interval = window.setInterval(() => {
+        const lastClose = lastPriceRef.current;
+        const open = lastClose + (Math.random() - 0.5) * 50;
+        const close = open + (Math.random() - 0.5) * 100;
+        const high = Math.max(open, close) + Math.random() * 50;
+        const low = Math.min(open, close) - Math.random() * 50;
+        
+        lastPriceRef.current = close;
+        
         seriesRef.current?.update({
           time: (Math.floor(Date.now() / 1000)) as any,
-          value: lastPriceRef.current,
+          open,
+          high,
+          low,
+          close,
         });
       }, 2000);
     }
