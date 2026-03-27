@@ -1,0 +1,27 @@
+{
+  "name": "TomAutoBot - Universal Autopilot",
+  "short_name": "TomAutoBot",
+  "description": "One-click automated trading across Binance, OANDA, Bybit, Coinbase and more.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0c",
+  "theme_color": "#3b82f6",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [],
+  "categories": ["finance", "productivity"],
+  "lang": "en"
+}

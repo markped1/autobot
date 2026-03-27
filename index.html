@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <!-- PWA / App Icons -->
+    <link rel="icon" type="image/png" href="/logo.png" />
+    <link rel="apple-touch-icon" href="/logo.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+
+    <!-- Mobile optimisation -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="TomAutoBot" />
+    <meta name="theme-color" content="#3b82f6" />
+
+    <!-- SEO -->
+    <meta name="description" content="TomAutoBot - Universal Autopilot Trading Platform. One-click automated profit generation across Binance, OANDA, Bybit, Coinbase and more." />
+
+    <title>TomAutoBot - Universal Autopilot</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+
+    <!-- Register Service Worker for offline + install -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then(reg => console.log('[TomAutoBot] SW registered:', reg.scope))
+            .catch(err => console.warn('[TomAutoBot] SW failed:', err));
+        });
+      }
+    </script>
+  </body>
+</html>
