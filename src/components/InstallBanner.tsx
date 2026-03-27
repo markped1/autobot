@@ -4,14 +4,29 @@ import { Download } from 'lucide-react';
 export default function InstallBanner() {
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [showBanner, setShowBanner] = useState(false);
+  const [isStandalone, setIsStandalone] = useState(false);
 
   useEffect(() => {
+    // Check if already installed
+    if (window.matchMedia('(display-mode: standalone)').matches || 
+        (window.navigator as any).standalone) {
+      setIsStandalone(true);
+      return;
+    }
+
     const handler = (e: Event) => {
+      // Prevent the mini-infobar from appearing on mobile
       e.preventDefault();
+      console.log("[TomAutoBot] beforeinstallprompt fired");
       setDeferredPrompt(e);
       setShowBanner(true);
     };
+
     window.addEventListener('beforeinstallprompt', handler as EventListener);
+    
+    // For debugging/testing, if we want to show it manually:
+    // setShowBanner(true);
+
     return () => window.removeEventListener('beforeinstallprompt', handler as EventListener);
   }, []);
 
@@ -19,12 +34,17 @@ export default function InstallBanner() {
     if (!deferredPrompt) return;
     deferredPrompt.prompt();
     const { outcome } = await deferredPrompt.userChoice;
+    console.log(`[TomAutoBot] Install outcome: ${outcome}`);
     if (outcome === 'accepted') setShowBanner(false);
     setDeferredPrompt(null);
   };
 
   const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
 
+  // If already installed, don't show the banner
+  if (isStandalone) return null;
+
+  // Don't render until we have the prompt (unless iOS where prompt isn't supported)
   if (!showBanner && !isIOS) return null;
 
   return (
