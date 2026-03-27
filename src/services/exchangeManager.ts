@@ -3,8 +3,6 @@ export interface ExchangeCredentials {
   apiSecret: string;
 }
 
-type SupportedExchange = 'binance' | 'bybit' | 'coinbase' | 'kraken' | 'oanda' | 'xtb' | 'mt4';
-
 export class ExchangeManager {
   private static instance: ExchangeManager;
   private connections: Map<string, boolean> = new Map();
